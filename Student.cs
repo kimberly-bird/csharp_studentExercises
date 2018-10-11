@@ -11,6 +11,7 @@ namespace StudentExercises
         public Cohort Cohort { get; set; }
         public List<Exercise> Exercises = new List<Exercise> ();
 
+
         // constructor
         public Student (string firstName, string lastName, string slackHandle, Cohort cohort) {
             FirstName = firstName;
