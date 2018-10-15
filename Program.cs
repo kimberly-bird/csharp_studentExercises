@@ -83,42 +83,59 @@ namespace StudentExercises {
                 twentySeven
             };
 
-            // List exercises for the JavaScript language by using the Where() LINQ method.
-            var JSEx = exercises.Where(ex => ex.Language == "Javascript");
+            // 1. List exercises for the JavaScript language by using the Where() LINQ method.
+            IEnumerable<Exercise> JSEx = exercises.Where(ex => ex.Language == "Javascript");
             foreach (var ex in JSEx)
             {
-                Console.WriteLine($"Javascript exercises: {ex.Name}");
+                // Console.WriteLine($"Javascript exercises: {ex.Name}");
             }
 
-            // List students in a particular cohort by using the Where() LINQ method.
-            var studentsIn27 = students.Where(stu => stu.Cohort == twentySeven);
+
+
+            // 2. List students in a particular cohort by using the Where() LINQ method.
+            IEnumerable<Student> studentsIn27 = students.Where(stu => stu.Cohort == twentySeven);
             foreach (var stu in studentsIn27)
             {
-                Console.WriteLine($"Students in Cohort 27: {stu.FirstName} {stu.LastName}");
+                // Console.WriteLine($"Students in Cohort 27: {stu.FirstName} {stu.LastName}");
             }
 
-            // List instructors in a particular cohort by using the Where() LINQ method.
-            var instructorsIn26 = instructors.Where(ins => ins.Cohort == twentySix);
+
+
+
+            // 3. List instructors in a particular cohort by using the Where() LINQ method.
+            IEnumerable<Instructor> instructorsIn26 = instructors.Where(ins => ins.Cohort == twentySix);
             foreach (var i in instructorsIn26)
             {
-                Console.WriteLine($"Instructors in Cohort 26: {i.FirstName} {i.LastName}");
+                // Console.WriteLine($"Instructors in Cohort 26: {i.FirstName} {i.LastName}");
             }
 
-            // Sort the students by their last name.
-            var sortedStudents = students.OrderBy(stu => stu.LastName);
+
+
+
+
+            // 4. Sort the students by their last name.
+            IEnumerable<Student> sortedStudents = students.OrderBy(stu => stu.LastName);
             foreach (var stu in sortedStudents)
             {
-                Console.WriteLine($"Sorted students by last name: {stu.LastName}, {stu.FirstName}");
+                // Console.WriteLine($"Sorted students by last name: {stu.LastName}, {stu.FirstName}");
             }
 
-            // Display any students that aren't working on any exercises 
-            var studentsWithNoExercises = students.Where(stu => stu.Exercises.Count() == 0);
+
+
+
+
+            // 5. Display any students that aren't working on any exercises 
+            List<Student> studentsWithNoExercises = students.Where(stu => stu.Exercises.Count == 0).ToList();
             foreach (var stu in studentsWithNoExercises)
             {
-                Console.WriteLine($"Students who aren't working on exercises: {stu.FirstName} {stu.LastName}");
+                // Console.WriteLine($"Students who aren't working on exercises: {stu.FirstName} {stu.LastName}");
             }
 
-            // Which student is working on the most exercises?
+
+
+
+
+            // 6. Which student is working on the most exercises?
             var studentWithMostExercises = (from s in students
                 // select is like .map and generates a new thing and put it into the final collection
                 select new {
@@ -128,20 +145,39 @@ namespace StudentExercises {
                 // put in order of descending number of exercises
                 .OrderByDescending(s => s.Exercises)
                 // grab just the first one -> first or default if the list is empty
-                .FirstOrDefault();
-                Console.WriteLine($"Student working on most exercises: {studentWithMostExercises.FirstName} {studentWithMostExercises.Exercises}");
+                .Take(1).ToList()[0];
+                // Console.WriteLine($"Student working on most exercises: {studentWithMostExercises.FirstName} {studentWithMostExercises.Exercises}");
 
 
-            // How many students in each cohort?
+
+
+
+            // 7. How many students in each cohort?
             // GroupBy gives you a collection of groups - each group has something that it's being grouped by (the key). The group itself is the list of all of the values of the group. Returns a collection of groups.
             // collection of groups (numberOfStudentsInEachCohort)
+            // METHOD WAY
             var numberOfStudentsInEachCohort = students.GroupBy(c => c.Cohort.Name);
+            // looks at every group of students
             foreach (var studentGroup in numberOfStudentsInEachCohort)
             {
                 // key is the thing you grouped by
-                Console.WriteLine($"{studentGroup.Key} has {studentGroup.Count()} students");
+                // Console.WriteLine($"{studentGroup.Key} has {studentGroup.Count()} students");
             }
+
+            // SQL/QUERY WAY
+            var totalStudents = from student in students
+                group student by student.Cohort into sorted
+                select new {
+                    Cohort = sorted.Key,
+                    Students = sorted.ToList()
+                };
+                foreach (var total in totalStudents)
+                {
+                    Console.WriteLine($"Cohort {total.Cohort.Name} has {total.Students.Count()} students");
+                }
     
+
+
 
             // Generate a report that displays which students are working on which exercises.
             foreach (Exercise ex in exercises) {
