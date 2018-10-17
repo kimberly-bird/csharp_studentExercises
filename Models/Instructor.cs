@@ -1,23 +1,27 @@
 using System;
 using System.Collections.Generic;
 
-namespace StudentExercises
+namespace StudentExercises.Models
 {
-    public class Student
+    public class Instructor
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string SlackHandle { get; set; }
         public Cohort Cohort { get; set; }
-        public List<Exercise> Exercises = new List<Exercise> ();
-
 
         // constructor
-        public Student (string firstName, string lastName, string slackHandle, Cohort cohort) {
+        public Instructor (string firstName, string lastName, string slackHandle, Cohort cohort)
+        {
             FirstName = firstName;
             LastName = lastName;
             SlackHandle = slackHandle;
             Cohort = cohort;
+        }
+
+        // Assign an exercise to a student
+        public void AssignExercise (Exercise exercise, Student student) {
+            student.Exercises.Add(exercise);
         }
 
     }

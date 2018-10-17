@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace StudentExercises
+namespace StudentExercises.Models
 {
     public class Exercise
     {
@@ -14,6 +14,12 @@ namespace StudentExercises
         {
             Name = name;
             Language = language;
+        }
+
+        // parameterless constructor
+        public Exercise()
+        {
+
         }
     }
 }
