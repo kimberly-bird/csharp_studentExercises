@@ -19,6 +19,11 @@ namespace StudentExercises.Models
             Cohort = cohort;
         }
 
+        public Instructor ()
+        {
+            
+        }
+
         // Assign an exercise to a student
         public void AssignExercise (Exercise exercise, Student student) {
             student.Exercises.Add(exercise);

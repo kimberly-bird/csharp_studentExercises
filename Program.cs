@@ -9,6 +9,34 @@ using StudentExercises.Models;
 namespace StudentExercises {
     class Program {
         static void Main (string[] args) {
+            // --------------- DAPPER ---------------
+            SqliteConnection db = DatabaseInterface.Connection;
+            DatabaseInterface.CheckExerciseTable ();
+            DatabaseInterface.CheckCohortTable ();
+            DatabaseInterface.CheckStudentTable ();
+            DatabaseInterface.CheckInstructorTable ();
+            DatabaseInterface.CheckStudentExerciseTable ();
+
+            // 3. Query the database for all the Exercises.
+            // whenever dapper does a query, it'll do the query, and get a row back and then make a new exercise object. so then new exercise - then it'll make an assumption that it'll have a parameterless constructor because it must be generic.
+            db.Query<Exercise> (@"SELECT * FROM Exercise")
+                .ToList ()
+                .ForEach (ex => Console.WriteLine ($"{ex.Name}: {ex.Language}"));
+
+            // 4. Fnd all the exercises in the database where the language is JavaScript.
+            db.Query<Exercise> (@"SELECT * FROM Exercise
+                WHERE Exercise.Language == 'Javascript'")
+                .ToList()
+                .ForEach (ex => Console.WriteLine($"{ex.Name} are Javascript exercises"));
+
+            // 5. Insert a new exercise into the database.
+            // db.Execute(@"
+            //     INSERT INTO Exercise (Name, Language) VALUES ('Dapper', 'C#')
+            // ");
+
+
+
+            // --------------- LINQ ---------------
             // Create 4, or more, exercises.
             Exercise loops = new Exercise ("loops", "Javascript");
             Exercise objects = new Exercise ("objects", "Javascript");
@@ -51,8 +79,7 @@ namespace StudentExercises {
             Steve.AssignExercise (dictionaries, Joey);
 
             // Create a list of students. Add all of the student instances to it.
-            List<Student> students = new List<Student> ()
-            {
+            List<Student> students = new List<Student> () {
                 Rachel,
                 Monica,
                 Ross,
@@ -63,8 +90,7 @@ namespace StudentExercises {
             };
 
             // Create a list of exercises. Add all of the exercise instances to it.
-            List<Exercise> exercises = new List<Exercise> () 
-            {
+            List<Exercise> exercises = new List<Exercise> () {
                 loops,
                 objects,
                 dictionaries,
@@ -72,8 +98,7 @@ namespace StudentExercises {
             };
 
             // list instructors
-            List<Instructor> instructors = new List<Instructor>()
-            {
+            List<Instructor> instructors = new List<Instructor> () {
                 Joe,
                 Jisie,
                 Jordan,
@@ -81,96 +106,76 @@ namespace StudentExercises {
             };
 
             // list of cohorts
-            List<Cohort> cohorts = new List<Cohort>() {
+            List<Cohort> cohorts = new List<Cohort> () {
                 twentyFive,
                 twentySix,
                 twentySeven
             };
 
-            // --------------- DAPPER ---------------
-            SqliteConnection db = DatabaseInterface.Connection;
-            DatabaseInterface.CheckExerciseTable();
-
-            // 3. Query the database for all the Exercises.
-            // whenever dapper does a query, it'll do the query, and get a row back and then make a new exercise object. so then new exercise - then it'll make an assumption that it'll have a parameterless constructor because it must be generic.
-            db.Query<Exercise>(@"SELECT * FROM Exercise")
-              .ToList()
-              .ForEach(ex => Console.WriteLine($"{ex.Name}: {ex.Language}"));
-
-
-
-            // --------------- LINQ ---------------
             // 1. List exercises for the JavaScript language by using the Where() LINQ method.
-            IEnumerable<Exercise> JSEx = exercises.Where(ex => ex.Language == "Javascript");
-            foreach (var ex in JSEx)
-            {
+            IEnumerable<Exercise> JSEx = exercises.Where (ex => ex.Language == "Javascript");
+            foreach (var ex in JSEx) {
                 // Console.WriteLine($"Javascript exercises: {ex.Name}");
             }
 
             // 2. List students in a particular cohort by using the Where() LINQ method.
-            IEnumerable<Student> studentsIn27 = students.Where(stu => stu.Cohort == twentySeven);
-            foreach (var stu in studentsIn27)
-            {
+            IEnumerable<Student> studentsIn27 = students.Where (stu => stu.Cohort == twentySeven);
+            foreach (var stu in studentsIn27) {
                 // Console.WriteLine($"Students in Cohort 27: {stu.FirstName} {stu.LastName}");
             }
 
             // 3. List instructors in a particular cohort by using the Where() LINQ method.
-            IEnumerable<Instructor> instructorsIn26 = instructors.Where(ins => ins.Cohort == twentySix);
-            foreach (var i in instructorsIn26)
-            {
+            IEnumerable<Instructor> instructorsIn26 = instructors.Where (ins => ins.Cohort == twentySix);
+            foreach (var i in instructorsIn26) {
                 // Console.WriteLine($"Instructors in Cohort 26: {i.FirstName} {i.LastName}");
             }
 
             // 4. Sort the students by their last name.
-            IEnumerable<Student> sortedStudents = students.OrderBy(stu => stu.LastName);
-            foreach (var stu in sortedStudents)
-            {
+            IEnumerable<Student> sortedStudents = students.OrderBy (stu => stu.LastName);
+            foreach (var stu in sortedStudents) {
                 // Console.WriteLine($"Sorted students by last name: {stu.LastName}, {stu.FirstName}");
             }
 
             // 5. Display any students that aren't working on any exercises 
-            List<Student> studentsWithNoExercises = students.Where(stu => stu.Exercises.Count == 0).ToList();
-            foreach (var stu in studentsWithNoExercises)
-            {
+            List<Student> studentsWithNoExercises = students.Where (stu => stu.Exercises.Count == 0).ToList ();
+            foreach (var stu in studentsWithNoExercises) {
                 // Console.WriteLine($"Students who aren't working on exercises: {stu.FirstName} {stu.LastName}");
             }
 
             // 6. Which student is working on the most exercises?
             var studentWithMostExercises = (from s in students
-                // select is like .map and generates a new thing and put it into the final collection
-                select new {
-                    FirstName = s.FirstName,
-                    Exercises = s.Exercises.Count()
-                })
+                    // select is like .map and generates a new thing and put it into the final collection
+                    select new {
+                        FirstName = s.FirstName,
+                            Exercises = s.Exercises.Count ()
+                    })
                 // put in order of descending number of exercises
-                .OrderByDescending(s => s.Exercises)
+                .OrderByDescending (s => s.Exercises)
                 // grab just the first one -> first or default if the list is empty
-                .Take(1).ToList()[0];
-                // Console.WriteLine($"Student working on most exercises: {studentWithMostExercises.FirstName} {studentWithMostExercises.Exercises}");
+                .Take (1).ToList () [0];
+            // Console.WriteLine($"Student working on most exercises: {studentWithMostExercises.FirstName} {studentWithMostExercises.Exercises}");
 
             // 7. How many students in each cohort?
             // GroupBy gives you a collection of groups - each group has something that it's being grouped by (the key). The group itself is the list of all of the values of the group. Returns a collection of groups.
             // collection of groups (numberOfStudentsInEachCohort)
             // METHOD WAY
-            var numberOfStudentsInEachCohort = students.GroupBy(c => c.Cohort.Name);
+            var numberOfStudentsInEachCohort = students.GroupBy (c => c.Cohort.Name);
             // looks at every group of students
-            foreach (var studentGroup in numberOfStudentsInEachCohort)
-            {
+            foreach (var studentGroup in numberOfStudentsInEachCohort) {
                 // key is the thing you grouped by
                 // Console.WriteLine($"{studentGroup.Key} has {studentGroup.Count()} students");
             }
 
             // SQL/QUERY WAY
             var totalStudents = from student in students
-                group student by student.Cohort into sorted
-                select new {
-                    Cohort = sorted.Key,
-                    Students = sorted.ToList()
-                };
-                foreach (var total in totalStudents)
-                {
-                    // Console.WriteLine($"Cohort {total.Cohort.Name} has {total.Students.Count()} students");
-                }
+            group student by student.Cohort into sorted
+            select new {
+                Cohort = sorted.Key,
+                Students = sorted.ToList ()
+            };
+            foreach (var total in totalStudents) {
+                // Console.WriteLine($"Cohort {total.Cohort.Name} has {total.Students.Count()} students");
+            }
 
             // Generate a report that displays which students are working on which exercises.
             foreach (Exercise ex in exercises) {
@@ -185,7 +190,6 @@ namespace StudentExercises {
             }
 
             // Query the database for all the Exercises.
-
 
         }
     }

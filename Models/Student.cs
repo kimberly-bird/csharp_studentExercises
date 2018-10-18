@@ -20,5 +20,10 @@ namespace StudentExercises.Models
             Cohort = cohort;
         }
 
+        public Student ()
+        {
+            
+        }
+
     }
 }

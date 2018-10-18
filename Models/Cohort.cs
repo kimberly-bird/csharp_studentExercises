@@ -9,11 +9,15 @@ namespace StudentExercises.Models
         public List<Student> Students { get; set; } 
         public List<Instructor> Instructors { get; set; } 
 
-
         // constructor
         public Cohort (string name) 
         {
             Name = name;
+        }
+
+        public Cohort()
+        {
+
         }
 
 
